@@ -27,7 +27,7 @@ if __name__ == '__main__':
 
                     logger.info(
                         f'{today} [{datetime.now(timezone.utc).strftime("%H:%M:%S")}]: '
-                        f'{len(accs)} accs zto be used.\n'
+                        f'{len(accs)} accs to be used.\n'
                     )
 
                     with requests.Session() as session:
