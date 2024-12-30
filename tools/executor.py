@@ -56,7 +56,7 @@ def single_executor(acc: AccItem, total_address_count: int):
                 )
                 if checkin_hash and 'already checkin' in checkin_hash:
                     logger.info(
-                        f"#{acc.index} | {address} | [{checkin_chain.name}] | come on {tomorrow_date_formatted}.")
+                        f"#{acc.index} | {address} | [{checkin_chain.name}] | come back on {tomorrow_date_formatted}.")
                 elif checkin_hash:
                     checkin_response = post_checkin_response(
                         index=acc.index,
