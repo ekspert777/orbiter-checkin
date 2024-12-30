@@ -1,5 +1,6 @@
 import concurrent.futures
 import random
+from datetime import datetime, timedelta
 
 import requests
 import web3
@@ -8,7 +9,11 @@ from web3 import Web3
 
 from datatypes.account import AccItem
 from tools.crypto import checkin_tx
-from tools.orbiter_requests import get_user_rank_and_points_response, get_checkin_record_response, post_checkin_response
+from tools.orbiter_requests import (
+    get_user_rank_and_points_response,
+    get_checkin_record_response,
+    post_checkin_response
+)
 from tools.other_utils import sleep_in_range
 from user_data.config import mobile_proxy, chains, sleep_between_accounts
 
@@ -39,13 +44,19 @@ def single_executor(acc: AccItem, total_address_count: int):
                     f'checkin_count: {checkin_info.result.checkInCount}.'
                 )
 
+                current_date = datetime.now()
+                tomorrow_date = current_date + timedelta(days=1)
+                current_date_formatted = current_date.strftime('%Y-%m-%d')
+                tomorrow_date_formatted = tomorrow_date.strftime('%Y-%m-%d')
                 checkin_chain = random.choice(chains)
                 checkin_hash = checkin_tx(
                     private_key=acc.private_key,
-                    chain=checkin_chain
+                    chain=checkin_chain,
+                    current_date=datetime.now().strftime('%Y%m%d')
                 )
                 if checkin_hash and 'already checkin' in checkin_hash:
-                    logger.info(f"#{acc.index} | {address} | [{checkin_chain.name}] | come back tommorow.")
+                    logger.info(
+                        f"#{acc.index} | {address} | [{checkin_chain.name}] | come on {tomorrow_date_formatted}.")
                 elif checkin_hash:
                     checkin_response = post_checkin_response(
                         index=acc.index,
@@ -57,18 +68,18 @@ def single_executor(acc: AccItem, total_address_count: int):
                     if checkin_response.message:
                         logger.error(
                             f"#{acc.index} | {address} | [{checkin_chain.name}] | "
-                            f"checkin: {checkin_chain.explorer}/{checkin_hash} | "
+                            f"checkin on {current_date_formatted}: {checkin_chain.explorer}/{checkin_hash} | "
                             f"error: {checkin_response.message}"
                         )
                     elif checkin_response.result == "ok":
                         logger.success(
                             f"#{acc.index} | {address} | [{checkin_chain.name}] | "
-                            f"checkin: {checkin_chain.explorer}/{checkin_hash}"
+                            f"checkin on {current_date_formatted}: {checkin_chain.explorer}/{checkin_hash}"
                         )
                     else:
                         logger.warning(
                             f"#{acc.index} | {address} | [{checkin_chain.name}] | "
-                            f"checkin: {checkin_chain.explorer}/{checkin_hash} | "
+                            f"checkin on {current_date_formatted}: {checkin_chain.explorer}/{checkin_hash} | "
                             f"unexpected response: {checkin_response.dict()}"
                         )
 

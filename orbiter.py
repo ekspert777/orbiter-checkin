@@ -12,7 +12,7 @@ from tools.other_utils import sleep_in_range, read_file
 from user_data.config import shuffle_accounts, max_workers_range
 
 if __name__ == '__main__':
-    add_logger(version='v1.0')
+    add_logger(version='v1.1')
 
     try:
         while True:

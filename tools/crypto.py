@@ -3,10 +3,13 @@ from web3 import Web3
 from web3.exceptions import TimeExhausted
 from web3.middleware import geth_poa_middleware
 
-from data.constants import CHECKIN_TX_DATA
 from datatypes.balance import Balance
 from datatypes.chain import ChainItem
 from user_data.config import gas_multiplier
+
+
+def pad_to_32_bytes(value):
+    return value.rjust(64, '0')
 
 
 def sign_and_wait(w3: Web3, transaction: {}, private_key: str, timeout: int = 300):
@@ -58,7 +61,7 @@ def get_balance(address: str, rpc: str):
     )
 
 
-def checkin_tx(private_key: str, chain: ChainItem):
+def checkin_tx(private_key: str, current_date: str, chain: ChainItem):
     try:
         w3 = Web3(Web3.HTTPProvider(chain.rpc))
         w3.middleware_onion.inject(geth_poa_middleware, layer=0)
@@ -68,11 +71,14 @@ def checkin_tx(private_key: str, chain: ChainItem):
 
         max_priority_fee_per_gas, max_fee_per_gas = get_gas(w3=w3)
 
+        current_date_hex = hex(int(current_date))[2:]
+        data = '0x30ea198a' + pad_to_32_bytes(current_date_hex)
+
         gas_limit = int(w3.eth.estimate_gas({
             "from": account.address,
             "to": chain.checkin_contract,
             "value": 0,
-            "data": CHECKIN_TX_DATA
+            "data": data
         }) * gas_multiplier)
 
         transaction = {
@@ -80,7 +86,7 @@ def checkin_tx(private_key: str, chain: ChainItem):
             "from": account.address,
             "to": chain.checkin_contract,
             "value": 0,
-            "data": CHECKIN_TX_DATA,
+            "data": data,
             "gas": gas_limit,
             "maxFeePerGas": int(max_fee_per_gas * gas_multiplier),
             "maxPriorityFeePerGas": int(max_priority_fee_per_gas * gas_multiplier),
