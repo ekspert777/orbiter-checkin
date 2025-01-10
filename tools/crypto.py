@@ -42,7 +42,7 @@ def get_gas(w3: Web3()):
     if int(base_fee_per_gas2) > max_fee_per_gas:
         max_fee_per_gas = int(base_fee_per_gas2)
 
-    return int(max_priority_fee_per_gas * 2), int(max_fee_per_gas * 3)
+    return int(max_priority_fee_per_gas), int(max_fee_per_gas)
 
 
 def get_account_nonce(private_key: str, chain: ChainItem):
