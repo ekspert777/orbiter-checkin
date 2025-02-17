@@ -20,7 +20,7 @@ sudo apt install software-properties-common -y
 
 Добавьте репозиторий, содержащий Python 3.10:
 
-```bash
+```bash22
 sudo add-apt-repository ppa:deadsnakes/ppa
 ```
 
